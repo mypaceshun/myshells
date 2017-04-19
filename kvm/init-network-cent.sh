@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #==========================================
-Usage="Usage: init-network-cent.sh {hostname} {NATIP} {bridgeIP}"
+Usage="Usage: init-network-cent.sh {hostname} {natIP} {bridgeIP}"
 #==========================================
 
 if [ $# -ne 3 ]; then
@@ -10,8 +10,8 @@ if [ $# -ne 3 ]; then
 fi
 
 hostname=$1
-localIP=$2
-globalIP=$3
+natIP=$2
+bridgeIP=$3
 
 echo "hostname: "$hostname
 echo "natIP   : "$natIP
@@ -28,11 +28,13 @@ hostnamectl set-hostname $hostname
 #==========================================
 # set localIP
 #==========================================
+natIP=$natIP"/24"
+gateway="192.168.122.1"
 
-nmcli c mod eth1 ipv4.method manual
-nmcli c mod eth1 ipv4.address "${natIP}"/24
-nmcli c mod eth1 ipv4.gateway "192.168.122.255"
-nmcli c mod eth1 ipv4.dns "192.168.122.1"
+nmcli c modify eth0 ipv4.addresses ${natIP}
+nmcli c modify eth0 ipv4.gateway $gateway
+nmcli c modify eth0 ipv4.dns $gateway
+nmcli c modify eth0 ipv4.method manual
 
 # restart
 nmcli c down eth0
@@ -44,3 +46,5 @@ nmcli c up eth0
 #==========================================
 # set hostname
 #==========================================
+
+systemctl restart network
