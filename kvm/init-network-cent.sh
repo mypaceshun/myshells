@@ -28,10 +28,9 @@ hostnamectl set-hostname $hostname
 #==========================================
 # set natIP
 #==========================================
-natIP=$natIP"/24"
 gateway="192.168.122.1"
 
-nmcli c modify eth0 ipv4.addresses ${natIP}
+nmcli c modify eth0 ipv4.addresses ${natIP}"/24"
 nmcli c modify eth0 ipv4.gateway $gateway
 nmcli c modify eth0 ipv4.dns $gateway
 nmcli c modify eth0 ipv4.method manual
@@ -43,16 +42,19 @@ nmcli c up eth0
 #==========================================
 # set bridgeIP
 #==========================================
-natIP=$natIP"/16"
 gateway="10.0.0.1"
 
-nmcli c modify eth1 ipv4.addresses ${natIP}
+nmcli c modify '有線接続 1' connection.id eth1
+nmcli c modify eth1 ipv4.addresses ${bridgeIP}"/16"
 nmcli c modify eth1 ipv4.gateway $gateway
 nmcli c modify eth1 ipv4.dns $gateway
 nmcli c modify eth1 ipv4.method manual
+nmcli c modify eth1 ipv4.dns-search lan.example.jp
 
 # restart
 nmcli c down eth1
 nmcli c up eth1
 
 systemctl restart network
+
+yum update
