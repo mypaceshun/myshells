@@ -56,5 +56,3 @@ nmcli c down eth1
 nmcli c up eth1
 
 systemctl restart network
-
-yum update
